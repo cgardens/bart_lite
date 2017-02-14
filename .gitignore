@@ -23,3 +23,5 @@
 # ruby version
 .ruby-version
 
+# db logfile
+logfile
