@@ -1,8 +1,4 @@
-class Arrival
-  include HTTParty
-  base_uri 'http://api.bart.gov/api/etd.aspx'
-
-  BART_PUBLIC_API_KEY = 'MW9S-E7SL-26DU-VV8V'
+class Arrival < BartApiWrapper
   # source: http://www.bart.gov/schedules/developers/api
   NORTH_BERKELEY_STATION = 'nbrk' # North Berkeley
   MONTGOMERY_BART_STATION = 'mont'
@@ -10,12 +6,22 @@ class Arrival
   SOUTH = 's'
 
   def initialize(station, direction)
+    @station = station
+    @direction = direction
+
+    puts BART_PUBLIC_API_KEY
+
     @options = { query: {
       key: BART_PUBLIC_API_KEY,
-      orig: station,
-      dir: direction,
+      orig: @station,
+      dir: @direction,
       cmd: 'etd',
     } }
+  end
+
+  def self.get_from_station_and_direction(station, direction)
+    raise "direction: #{direction} is invalid. n & y are the only valid values for direction." if direction != 'n' && direction != 's'
+    Arrival.new(station, direction).get_arrivals
   end
 
   def self.go_to_work
@@ -27,8 +33,14 @@ class Arrival
   end
 
   def get_arrivals
-    bart_api_response = self.class.get('', @options)
-    etd_by_line = bart_api_response['root']['station']['etd']
+    bart_api_response = self.class.get('/etd.aspx', @options)
+    station_results = bart_api_response['root']['station']
+
+    if station_results.nil?
+      raise "no results found for station: #{@station}. consider hitting /valid_station_codes to check that your station code is correct."
+    end
+
+    etd_by_line = station_results['etd']
     arrivals_estimates = []
 
     # normal result.
@@ -57,10 +69,5 @@ class Arrival
       end
     end
     arrivals_estimates.sort_by { |estimate| estimate[:eta_min] }
-
-  end
-
-  def to_commute_useful_json
-
   end
 end
