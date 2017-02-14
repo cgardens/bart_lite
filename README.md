@@ -29,3 +29,6 @@ How to use:
 * bundle exec rake db:create
 * be rake db:migrate RAILS_ENV=development
 * bundle exec rails s
+
+PRs, feedback, and feature requests are welcome--though no promises on the latter.
+ 
