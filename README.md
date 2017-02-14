@@ -3,6 +3,7 @@
 This app is a lightweight json wrapper of the Bart Api. It's meant to provide an easy url (perhaps to be bookmarked) to show what trains will be arriving at a Bart station in a given station. Below are the sample links for how this app might be used.
 
 Bart Lite was built because I needed something lightweight that I could bookmark in my phone to check when the Bart was coming for my commute. Bart Lite was built because: 
+
 1) existing bart mobile apps come and go frequently and are unreliable 
 2) more traditional travel apps (ex. google maps) are too heavy weight
 
