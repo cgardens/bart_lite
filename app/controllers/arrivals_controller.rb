@@ -1,5 +1,5 @@
 class ArrivalsController < ApplicationController
-  def get_arrivals
+  def index
     station = params[:station]
     direction = params[:direction]
 
