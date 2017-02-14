@@ -68,6 +68,8 @@ class Arrival < BartApiWrapper
         })
       end
     end
-    arrivals_estimates.sort_by { |estimate| estimate[:eta_min] }
+    arrivals_estimates.sort_by do |estimate|
+      estimate[:eta_min] == 'Leaving' ? 0 : estimate[:eta_min].to_i
+    end
   end
 end
