@@ -1,4 +1,4 @@
-class Arrival < BartApiWrapper
+class Arrivals < BartApiWrapper
   # source: http://www.bart.gov/schedules/developers/api
   NORTH_BERKELEY_STATION = 'nbrk' # North Berkeley
   MONTGOMERY_BART_STATION = 'mont'
@@ -8,8 +8,6 @@ class Arrival < BartApiWrapper
   def initialize(station, direction)
     @station = station
     @direction = direction
-
-    puts BART_PUBLIC_API_KEY
 
     @options = { query: {
       key: BART_PUBLIC_API_KEY,
@@ -21,15 +19,22 @@ class Arrival < BartApiWrapper
 
   def self.get_from_station_and_direction(station, direction)
     raise "direction: #{direction} is invalid. n & y are the only valid values for direction." if direction != 'n' && direction != 's'
-    Arrival.new(station, direction).get_arrivals
+    Arrivals.new(station, direction).get_arrivals
   end
 
+  def self.get_arrivals_for_destination(station, direction, train_line)
+    get_from_station_and_direction(station, direction).
+      select { |arrival| arrival[:destination].downcase == train_line.downcase }.
+      map { |arrival| arrival[:eta_min] }
+  end
+
+  # for testing, should be removed.
   def self.go_to_work
-    Arrival.new(NORTH_BERKELEY_STATION, SOUTH).get_arrivals
+    Arrivals.new(NORTH_BERKELEY_STATION, SOUTH).get_arrivals
   end
 
   def self.go_home
-    Arrival.new(MONTGOMERY_BART_STATION, NORTH).get_arrivals
+    Arrivals.new(MONTGOMERY_BART_STATION, NORTH).get_arrivals
   end
 
   def get_arrivals
@@ -61,7 +66,7 @@ class Arrival < BartApiWrapper
       estimates.each do |estimate|
         arrivals_estimates.push({
           destination: line['destination'],
-          eta_min: estimate['minutes'],
+          eta_min: estimate['minutes'], # note: hacky, this can either be "Leaving" or a string representation of an int.
           length: estimate['length'],
           direction: estimate['direction'],
           platform: estimate['platform']

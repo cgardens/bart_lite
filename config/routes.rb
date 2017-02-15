@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   resources :arrivals, only: :index
   resources :valid_station_codes, only: :index
+  resources :etas, only: :index
 
   get 'arrivals/go_to_work', controller: :arrivals, action: :go_to_work
   get 'arrivals/go_home', controller: :arrivals, action: :go_home
